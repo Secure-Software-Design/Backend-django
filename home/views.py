@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import permissions
 from . import models
+import re
 
 
 
@@ -37,3 +38,26 @@ def student_login(request):
         return JsonResponse({'bool':True})
     else:
         return JsonResponse({'bool': False})
+
+
+
+
+
+@csrf_exempt
+def student_register(request):
+    inputUsername=request.POST['username']
+    password=request.POST['password']
+    inputEmail=request.POST['email']
+    patternUsername = "^[a-zA-Z0-9_-]{3,15}$"
+    patternEmail = "[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"
+    
+    username = re.findall(patternUsername, inputUsername)
+    email = re.findall(patternEmail, inputEmail)
+
+    print(username, email, password)
+    if len(password) > 20 or len(password) < 5 or len(email) == 0 or len(username) == 0 :
+        return JsonResponse({'bool':False})
+
+    models.Student.objects.create(username=username,password=password, email=email)
+
+    return JsonResponse({'bool':True})
