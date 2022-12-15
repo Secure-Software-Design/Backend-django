@@ -82,10 +82,12 @@ def getMatchs(request):
             "match_id":-1,
             "team1":"",
             "team1_code":"",
+            "team1_flag":"",
             "goal_team1":-1,
             "penalties_team1":-1,
             "team2":"",
             "team2_code":"",
+            "team2_flag":"",
             "goal_team2":-1,
             "penalties_team2":-1,
             "winner":"",
@@ -98,15 +100,16 @@ def getMatchs(request):
         match["team1_code"] = team1["country"]
         match["goal_team1"] = team1["goals"]
         match["penalties_team1"] = team1["penalties"]
+        match["team1_flag"] = "https://countryflagsapi.com/png/" + team1["name"].lower()
         team2 = el["away_team"]
         match["team2"] = team2["name"]
         match["team2_code"] = team2["country"]
+        match["team2_flag"] = "https://countryflagsapi.com/png/" + team2["name"].lower()
         match["goal_team2"] = team2["goals"]
         match["penalties_team2"] = team2["penalties"]
         match["winner"] = el["winner"]
         match["winner_code"] = el["winner_code"]
         match["date_time"] = el["datetime"]
-        print(match)
         if el["stage_name"] == "First stage":
             resultMatchs["first_stage"].append(match)
         elif el["stage_name"] == "Round of 16":

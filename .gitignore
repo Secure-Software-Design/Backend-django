@@ -3,3 +3,4 @@ jo.txt
 *.pot
 *.pyc
 __pycache__
+foot.py
