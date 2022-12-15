@@ -1,0 +1,5 @@
+jo.txt
+*.log
+*.pot
+*.pyc
+__pycache__
