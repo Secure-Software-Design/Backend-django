@@ -2,6 +2,7 @@ from django.test import TestCase
 import re
 
 # coverage run -m pytest
+# coverage report
 
 def student_register(inputUsername, password, inputEmail):
     patternUsername = "^[a-zA-Z0-9_-]{3,15}$"
