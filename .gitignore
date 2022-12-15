@@ -4,3 +4,7 @@ jo.txt
 *.pyc
 __pycache__
 foot.py
+home/.coverage
+home/__pycache__/*
+Backend-django/foot.py
+home/__pycache__/views.cpython-38.pyc

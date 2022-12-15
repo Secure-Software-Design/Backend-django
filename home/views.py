@@ -16,17 +16,17 @@ import json
 
 """class StudentList(APIView):
     def get(self,request):
-        students = models.Student.objects.all()
+        students = models.User.objects.all()
         serializer = StudentSerializer(students, many=True)
         return Response(serializer.data)"""
 
 class StudentList(generics.ListCreateAPIView):
-    queryset=models.Student.objects.all()
+    queryset=models.User.objects.all()
     serializer_class = StudentSerializer
     #permission_classes = [permissions.IsAuthenticated]
 
 class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset=models.Student.objects.all()
+    queryset=models.User.objects.all()
     serializer_class = StudentSerializer
     #permission_classes = [permissions.IsAuthenticated]
 
@@ -34,14 +34,11 @@ class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
 def student_login(request):
     username=request.POST['username']
     password=request.POST['password']
-    studentData=models.Student.objects.get(username=username,password=password)
+    studentData=models.User.objects.get(username=username,password=password)
     if studentData:
         return JsonResponse({'bool':True})
     else:
         return JsonResponse({'bool': False})
-
-
-
 
 
 @csrf_exempt
@@ -55,13 +52,13 @@ def student_register(request):
     username = re.findall(patternUsername, inputUsername)
     email = re.findall(patternEmail, inputEmail)
 
-    print(username, email, password)
     if len(password) > 20 or len(password) < 5 or len(email) == 0 or len(username) == 0 :
         return JsonResponse({'bool':False})
 
-    models.Student.objects.create(username=username,password=password, email=email)
+    models.User.objects.create(username=username[0],password=password, email=email[0])
 
     return JsonResponse({'bool':True})
+
 
 
 def getMatchs(request):

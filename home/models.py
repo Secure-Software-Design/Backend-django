@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 # python3 manage.py migrate
 
 
-class Student(models.Model):
+class User(models.Model):
     username = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
