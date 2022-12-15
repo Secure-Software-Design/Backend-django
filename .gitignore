@@ -3,3 +3,7 @@ jo.txt
 *.pot
 *.pyc
 __pycache__
+home/.coverage
+home/__pycache__/*
+Backend-django/foot.py
+home/__pycache__/views.cpython-38.pyc

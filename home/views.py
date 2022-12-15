@@ -41,9 +41,6 @@ def student_login(request):
         return JsonResponse({'bool': False})
 
 
-
-
-
 @csrf_exempt
 def student_register(request):
     inputUsername=request.POST['username']
@@ -55,13 +52,13 @@ def student_register(request):
     username = re.findall(patternUsername, inputUsername)
     email = re.findall(patternEmail, inputEmail)
 
-    print(username, email, password)
     if len(password) > 20 or len(password) < 5 or len(email) == 0 or len(username) == 0 :
         return JsonResponse({'bool':False})
 
-    models.Student.objects.create(username=username,password=password, email=email)
+    models.Student.objects.create(username=username[0],password=password, email=email[0])
 
     return JsonResponse({'bool':True})
+
 
 
 def getMatchs(request):
