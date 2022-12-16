@@ -1,69 +1,44 @@
-from django.shortcuts import render
-from django.http import JsonResponse,HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.views import APIView
-from .serializers import StudentSerializer
-from rest_framework.response import Response
-from rest_framework import generics
-from rest_framework import permissions
-from . import models
+from django.test import TestCase
 import re
 import requests
-import json 
+import json
 
+# coverage run -m pytest
+# coverage report
 
-# Create your views here.
-
-"""class StudentList(APIView):
-    def get(self,request):
-        students = models.User.objects.all()
-        serializer = StudentSerializer(students, many=True)
-        return Response(serializer.data)"""
-
-class StudentList(generics.ListCreateAPIView):
-    queryset=models.User.objects.all()
-    serializer_class = StudentSerializer
-    #permission_classes = [permissions.IsAuthenticated]
-
-class StudentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset=models.User.objects.all()
-    serializer_class = StudentSerializer
-    #permission_classes = [permissions.IsAuthenticated]
-
-@csrf_exempt
-def user_login(request):
-    username=request.POST['username']
-    password=request.POST['password']
-    studentData=models.User.objects.get(username=username,password=password)
-    print(username, password, "TEST", studentData)
-    if studentData:
-        return JsonResponse({'Response': True})
-    else:
-        return JsonResponse({'Response': False})
-
-
-@csrf_exempt
-def user_register(request):
-    inputUsername=request.POST['username']
-    password=request.POST['password']
-    inputEmail=request.POST['email']
+def user_register(inputUsername, password, inputEmail):
     patternUsername = "^[a-zA-Z0-9_-]{3,15}$"
     patternEmail = "[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"
+    
     username = re.findall(patternUsername, inputUsername)
     email = re.findall(patternEmail, inputEmail)
 
+    print(username, email, password)
     if len(password) > 20 or len(password) < 5 or len(email) == 0 or len(username) == 0 :
-        return JsonResponse({'Response':False})
+        return False
 
-    models.User.objects.create(username=username[0],password=password, email=email[0])
+    return True
 
-    return JsonResponse({'Response  ':True})
 
+def user_login(error):
+    
+    print("Mock call to DB to search for student login information")
+    if error:
+        return True
+    else:
+        return False
 
 
 def getMatchs(request):
-    res = requests.get('https://worldcupjson.net/matches/')
-    response = json.loads(res.text)
+    try:
+        res = requests.get(request)
+        response = json.loads(res.text)
+    except:
+        print("Internal error")
+        return 1
+    
+
+
 
     resultMatchs = {
         "first_stage":[],
@@ -91,11 +66,11 @@ def getMatchs(request):
             "winner_code":"",
             "date_time":"",
         }
-        match["match_id"] = el["id"]
-        team1 = el["home_team"]
-        match["team1"] = team1["name"]
-        match["team1_code"] = team1["country"]
-        match["goal_team1"] = team1["goals"]
+        match["match_id"] = el["id"] # pragma: no cover
+        team1 = el["home_team"] # pragma: no cover
+        match["team1"] = team1["name"] # pragma: no cover
+        match["team1_code"] = team1["country"] # pragma: no cover
+        match["goal_team1"] = team1["goals"] # pragma: no cover
         match["penalties_team1"] = team1["penalties"]
         match["team1_flag"] = "https://countryflagsapi.com/png/" + team1["name"].lower()
         team2 = el["away_team"]
@@ -121,4 +96,39 @@ def getMatchs(request):
             resultMatchs["final"].append(match)
         else:
             print("ERROR STAGE NAME NOT FOUND : ", el["stage_name"] , "!!!!!\n") 
-    return JsonResponse(resultMatchs)
+    return 0
+
+
+# Create your tests here.
+
+def test_register_good_data():
+    assert user_register('semaphore', 'StrongPassw0rd*', "good@email.com") == True
+
+
+def test_register_bad_username():
+    assert user_register('Ju', 'StrongPassw0rd*', "good@email.com") == False
+
+
+def test_register_bad_password():
+    assert user_register('semaphore', 'ok*', "good@email.com") == False
+
+
+def test_register_bad_email():
+    assert user_register('semaphore', 'StrongPassw0rd*', "bad") == False
+
+
+def test_login():
+    assert user_login(True) == True
+
+
+def test_login_failure():
+    assert user_login(False) == False
+
+
+def test_get_matchs_success():
+    assert getMatchs("https://worldcupjson.net/matches/") == 0
+
+
+def test_get_matchs_failure():
+    assert getMatchs("") == 1
+
